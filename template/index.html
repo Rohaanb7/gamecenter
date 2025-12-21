@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATRIX ZONE</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+20&family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="icon" href="{{ url_for('static', filename='image/matrix.jpeg') }}">
+
+</head>
+    <body class="jersey-20-regular">
+    <div class="herosection flex">
+        <div class="overlay"></div>
+        <nav class="">
+            <a href="">
+                <h1>Matrix Zone</h1>
+            </a>
+        </nav>
+        
+        <div class="hero-heading">
+            <h1 class="head-1"><span>LEVEL UP</span> <span>YOUR GAMING</span> <span>EXPERIENCE</span> </h1>
+            <h5 class="head-2">
+                <ul>
+                    <li>PS2</li>
+                    <li>PS4</li>
+                    <li>PS5</li>
+                </ul>
+            </h5>
+            <div class="button">
+                <a href="{{ url_for('booking') }}">
+                    <button class="hero-button">Get Started</button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="collab">
+
+
+
+    <div class="features">
+            <h1> Features</h1>
+            <div class="container">
+                <div class="box" >
+                    <img src="{{ url_for('static', filename='assets/console.png') }}" alt="console gaming setup">
+                    <h2>Console Gaming setup</h2>
+                
+                </div>
+                <div class="box" >
+                    <img src="{{ url_for('static', filename='assets/chair.jpg') }}" alt="comfortable chair">  
+                    <h2>Comfortable Chairs</h2>
+                    
+                </div>
+                <div class="box" >
+                    <img src="{{ url_for('static', filename='assets/AC.png') }}" alt="air-conditioned arena">
+                    <h2>Air-Conditioned Arena</h2>
+                </div>       
+                <div class="box" >
+                    <img src="{{ url_for('static', filename='assets/wifi.png') }}" alt="high-speed internet">
+                    <h2>High-Speed Internet</h2>
+                
+                </div>
+                <div class="box" >
+                    <img src="{{ url_for('static', filename='assets/headset.png') }}" alt="immersive audio system">
+                    <h2>Immersive Audio System</h2>
+                
+                </div>
+                <div class="box" >
+                    <img src="{{ url_for('static', filename='assets/vaccum.png') }}" alt="clean and safe space">
+                    <h2>Clean & Safe Space</h2>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+        <div class="about">
+        <div class="about-header">OUR SERVICE</div>
+
+        <div class="text-about">
+            <p class="service-text jersey-15-regular">
+            Matrix Zone is a premium gaming center built for gamers of all generations. <br>
+            We offer PlayStation 2, PlayStation 4, and PlayStation 5 with a wide range 
+            of games available. <br>
+            Enjoy immersive audio and smooth gameplay in a fully air-conditioned,
+            clean, and safe environment. <br>
+            Matrix Zone is the perfect place for casual play, competitive gaming, 
+            and group sessions.
+            </p>
+            <div class="images">
+                <img class="logo" src="{{ url_for('static', filename='assets/logo.png') }}" alt="Matrix Zone Logo">   
+            </div>
+        </div>
+        </div>
+    </div>
+    
+
+
+    <div class="ambience">
+        <div class="header">
+            AMBIENCE
+        </div>
+
+        <div class="carousel snap-container">
+            <img src="{{ url_for('static', filename='assets/img1.png') }}" alt="" class="card">
+            <img src="{{ url_for('static', filename='assets/img2.png') }}" alt="" class="card">
+            <img src="{{ url_for('static', filename='assets/img3.png') }}" alt="" class="card">
+            <img src="{{ url_for('static', filename='assets/img4.png') }}" alt="" class="card">
+            <img src="{{ url_for('static', filename='assets/img5.png') }}" alt="" class="card">
+            <img src="{{ url_for('static', filename='assets/img6.png') }}" alt="" class="card">
+        </div>
+    </div>
+
+
+
+
+    <div class="footer">
+        <div class="footer-header">
+            <div class="head-img">
+                <img src="{{ url_for('static', filename='assets/logo1.png') }}" alt="">
+            </div>
+            <div class="head-text">
+                Matrix Zone
+            </div>
+        </div>
+        <div class="footer-body kanit-regular">
+            <div class="contact">
+                <h2>CONTACT</h2>
+                <p class="font-30">94446 96696</p>
+                <p class="font-30">94442 49995</p>
+            </div>
+            <div class="timings">
+                <div class="tim-1">
+                    <h2>From classic to <span>Next-Gen Gaming</span></h2>
+                    <p>                
+                        <ul class="font-30">
+                            <li>PS2</li>
+                            <li>PS4</li>
+                            <li>PS5</li>
+                        </ul>
+                    </p>
+                </div>
+                <div class="tim-2">
+                    <h2>TMINGS</h2>
+                    <p class="font-30">
+                        Weekdays: 02:00 PM - 11:00 PM<br>
+                        Weekends: 10:00 AM - 11:00 PM
+                    </p>
+                </div>
+            </div>
+            <div class="navigation">
+                    <ul class="font-30">
+                        <li>Home</li>
+                        <li>Our Services</li>
+                        <li>Ambience</li>
+                        <li>Book Slot</li>
+                    </ul>
+            </div>
+        </div>
+        <div class="final-footer">
+            Feedback / Queries: bala_saravananhan@yahoo.co.in
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script1.js') }}"></script>
+</body>
+</html>
