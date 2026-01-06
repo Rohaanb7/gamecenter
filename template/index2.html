@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Matrix Zone Booking</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="../static/style56.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jersey+15&family=Jersey+20&display=swap" rel="stylesheet">
+<link rel="icon" href="../static/image/matrix.jpeg">
+</head>
+
+<body class="jersey-20-regular">
+
+<div class="page-bg">
+<div class="overlay"></div>
+<nav class="">
+            <a href="{{ url_for('home') }}">
+                <h1>Matrix Zone</h1>
+            </a>
+        </nav>
+
+<div class="hero" id="heroSlider">
+  <img src="../static/image/marvels-spider-man-pc-games-playstation-4-playstation-5-7680x3292-8652.jpg" class="hero-slide">
+  <img src="../static/image/yoti.jpg" class="hero-slide">
+  <img src="../static/image/god-of-war-5-v78grhtfkjsau2lc.jpg" class="hero-slide">
+  <img src="../static/image/batman3.jpg" class="hero-slide">
+  <img src="../static/image/un.jpg" class="hero-slide">
+</div>
+
+<h2 class="title">BOOKING DETAILS</h2>
+
+<div class="container">
+
+  <div class="row">
+    <span class="tag">NAME :</span>
+    <input type="text" id="name" class="line-input" required>
+  </div>
+
+  <div class="row">
+    <span class="tag">CONTACT NO :</span>
+    <input type="tel" id="contact" class="line-input" maxlength="10" required>
+  </div>
+
+  <div class="row">
+    <span class="tag">Players :</span>
+    <div class="counter">
+      <button type="button" onclick="changePlayers(-1)">−</button>
+      <span id="players">4</span>
+      <button type="button" onclick="changePlayers(1)">+</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <span class="tag">CONSOLE :</span>
+    <div class="console">
+      <label><input type="radio" name="console" value="PS2"> PS 2</label>
+      <label><input type="radio" name="console" value="PS4"> PS 4</label>
+      <label><input type="radio" name="console" value="PS5-1"> PS 5-1</label>
+      <label><input type="radio" name="console" value="PS5-2"> PS 5-2</label>
+      <label><input type="radio" name="console" value="PS5-3"> PS 5-3</label>
+    </div>
+  </div>
+
+  <div class="row">
+    <span class="tag">DATE :</span>
+    <input type="date" id="date"  class="date-input" required>
+  </div>
+
+  <div class="row time-row">
+    <span class="tag">TIME SLOT :</span>
+    <div class="slots" id="slotsContainer">
+      </div>
+  </div>
+   <div class="cards pricing-cards">
+
+  <div class="pricing-card ps2">
+    <img src="../static/image/ps2.png" alt="PS2">
+    <div class="price-content">
+      <h3>PS 2</h3>
+
+      <div class="price-table">
+  <div>Players</div>
+  <div>30 mins</div>
+  <div>1 hour</div>
+
+  <div>X1</div>
+  <div>₹20</div>
+  <div>₹30</div>
+
+  <div>X2</div>
+  <div>₹40</div>
+  <div>₹60</div>
+
+  <div>X4</div>
+  <div>₹80</div>
+  <div>₹120</div>
+</div>
+
+    </div>
+  </div>
+
+  <div class="pricing-card ps4">
+    <img src="../static/image/ps4.png" alt="PS4">
+    <div class="price-content">
+      <h3>PS 4</h3>
+
+      <div class="price-table">
+  <div>Players</div>
+  <div>30 mins</div>
+  <div>1 hour</div>
+
+  <div>X1</div>
+  <div>₹80</div>
+  <div>₹40</div>
+
+  <div>X2</div>
+  <div>₹140</div>
+  <div>₹60</div>
+
+  <div>X4</div>
+  <div>₹250</div>
+  <div>₹140</div>
+</div>
+
+    </div>
+  </div>
+
+  <div class="pricing-card ps5">
+    <img src="../static/image/ps5.png" alt="PS5">
+    <div class="price-content">
+      <h3>PS 5</h3>
+
+      <div class="price-table">
+  <div>Players</div>
+  <div>30 mins</div>
+  <div>1 hour</div>
+
+  <div>X1</div>
+  <div>₹100</div>
+  <div>₹60</div>
+
+  <div>X2</div>
+  <div>₹150</div>
+  <div>₹80</div>
+
+  <div>X4</div>
+  <div>₹300</div>
+  <div>₹160</div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+
+  <button class="book-btn" onclick="bookNow()" type="button">BOOK NOW</button>
+
+</div>
+<footer>  
+  <h2>MATRIX ZONE</h2>
+  <div class="footer-grid">
+    <div>
+      <h4>Contact</h4>
+      <p>94446 96696</p>
+      <p>94442 49995</p>
+    </div>
+    <div>
+      <h4>Timings</h4>
+      <p>Weekdays: 2 PM – 11 PM</p>
+      <p>Weekends: 10 AM – 11 PM</p>
+    </div>
+    <div>
+      <h4>Menu</h4>
+      <p>Home</p>
+      <p>Services</p>
+      <p>Ambience</p>
+      <p>Book Slot</p>
+    </div>
+  </div>
+</footer>
+</div>
+<script src="{{ url_for('static', filename='booking.js') }}"></script>
+
+</body>
+</html>

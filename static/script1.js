@@ -17,14 +17,24 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedSlot = btn.innerText;
   }
 
+  // ✅ FINAL bookNow (no redirect, same page)
   window.bookNow = function(){
+    const date = document.getElementById("date").value;
+
+    if (!selectedSlot || !date) {
+      alert("Please select date and time slot");
+      return;
+    }
+
     alert(
-      "Booking Confirmed!\n\nPlayers: " + players +
+      "Booking Confirmed!\n\n" +
+      "Players: " + players +
+      "\nDate: " + date +
       "\nSlot: " + selectedSlot
     );
   }
-  
 
+  /* ---------- HERO SLIDER (unchanged) ---------- */
 
   const slides = document.querySelectorAll(".hero-slide");
   const hero = document.getElementById("heroSlider");
@@ -44,18 +54,5 @@ document.addEventListener("DOMContentLoaded", () => {
     current = (current + 1) % slides.length;
     showHeroSlide(current);
   });
-document.querySelector('.book-btn').addEventListener('click', function() {
-    window.location.href = 'index2.html';
-});
 
 });
-function bookNow(){
-  const date = document.getElementById("date").value;
-
-  alert(
-    "Booking Confirmed!\n\n" +
-    "Players: " + players +
-    "\nDate: " + date +
-    "\nSlot: " + selectedSlot
-  );
-}
