@@ -61,7 +61,7 @@ def add_booking():
 
     collection.insert_one(booking_data)
 
-    return jsonify({"message": "Booking successful 🎮"}), 20
+    return jsonify({"message": "Booking successful 🎮"}), 200
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
