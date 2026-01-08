@@ -8,33 +8,58 @@ document.addEventListener("DOMContentLoaded", () => {
     if(players < 1) players = 1;
     if(players > 10) players = 10;
     document.getElementById("players").innerText = players;
-  }
+  };
 
-  window.selectSlot = function(btn){
-    document.querySelectorAll(".slots button")
+  // ✅ FIXED selectSlot
+  window.selectSlot = function (btn) {
+    document.querySelectorAll("#slotsContainer button")
       .forEach(b => b.classList.remove("active"));
+
     btn.classList.add("active");
     selectedSlot = btn.innerText;
-  }
+  };
 
-  // ✅ FINAL bookNow (no redirect, same page)
-  window.bookNow = function(){
+  // ✅ FIXED bookNow (SENDS DATA TO FLASK)
+  window.bookNow = async function(){
     const date = document.getElementById("date").value;
+    const name = document.getElementById("name").value;
+    const contact = document.getElementById("contact").value;
 
-    if (!selectedSlot || !date) {
-      alert("Please select date and time slot");
+    const consoleSelected = document.querySelector(
+      'input[name="console"]:checked'
+    );
+
+    if (!selectedSlot || !date || !name || !contact || !consoleSelected) {
+      alert("Please fill all details");
       return;
     }
 
-    alert(
-      "Booking Confirmed!\n\n" +
-      "Players: " + players +
-      "\nDate: " + date +
-      "\nSlot: " + selectedSlot
-    );
-  }
+    const bookingData = {
+      name,
+      contact,
+      players,
+      console: consoleSelected.value,
+      date,
+      time_slot: selectedSlot
+    };
 
-  /* ---------- HERO SLIDER (unchanged) ---------- */
+    try {
+      const res = await fetch("http://localhost:5000/add-booking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bookingData)
+      });
+
+      const result = await res.json();
+      alert(result.message);
+
+    } catch (err) {
+      console.error(err);
+      alert("Server error");
+    }
+  };
+
+  /* ---------- HERO SLIDER ---------- */
 
   const slides = document.querySelectorAll(".hero-slide");
   const hero = document.getElementById("heroSlider");
