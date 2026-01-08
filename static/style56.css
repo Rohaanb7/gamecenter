@@ -445,3 +445,22 @@ footer{
     height: 55vh;
   }
 }
+/* ================= BOOKED SLOT (MOVIE BOOKING STYLE) ================= */
+
+.slots button.booked {
+  background-color: #c0392b !important;   /* RED */
+  border: 1px solid #ff4d4d !important;
+  color: white !important;
+  cursor: not-allowed !important;
+  opacity: 0.85;
+  box-shadow:
+    0 0 12px rgba(255, 0, 0, 0.8),
+    inset 0 0 8px rgba(0, 0, 0, 0.8);
+}
+
+/* Prevent hover effect on booked slots */
+.slots button.booked:hover {
+  background-color: #c0392b !important;
+  box-shadow:
+    0 0 12px rgba(255, 0, 0, 0.8);
+}

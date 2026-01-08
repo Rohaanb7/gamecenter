@@ -28,6 +28,23 @@ TIME_SLOTS = [
 def get_time_slots():
     return jsonify(TIME_SLOTS)
 
+# 🔴 RETURN BOOKED SLOTS (DATE + CONSOLE WISE)
+@app.route("/booked-slots")
+def booked_slots():
+    date = request.args.get("date")
+    console = request.args.get("console")
+
+    if not date or not console:
+        return jsonify([])
+
+    bookings = collection.find(
+        {"date": date, "console": console},
+        {"_id": 0, "time_slot": 1}
+    )
+
+    booked = [b["time_slot"] for b in bookings]
+    return jsonify(booked)
+
 @app.route("/add-booking", methods=["POST"])
 def add_booking():
 
