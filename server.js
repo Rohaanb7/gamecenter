@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
@@ -5,39 +7,59 @@ const { MongoClient } = require("mongodb");
 const path = require("path");
 const fs = require("fs");
 const { promisify } = require("util");
+
 const writeFile = promisify(fs.writeFile);
 
 const app = express();
+
+// ================= MIDDLEWARE =================
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// serve static files (js/css/assets) from the `static` folder under the /static URL prefix
-app.use('/static', express.static(path.join(__dirname, "static")));
+app.use("/static", express.static(path.join(__dirname, "static")));
 
 app.use(
   session({
-    secret: "matrix_zone_admin_secret_2024",
+    secret: process.env.SESSION_SECRET || "fallback_secret",
     resave: false,
     saveUninitialized: false,
+    cookie: { secure: false }, // set true only in HTTPS production
   })
 );
 
-const MONGO_URI =
-  "mongodb+srv://rohaan:1234@cluster0.cjebhdq.mongodb.net/matrixdb?retryWrites=true&w=majority";
+// ================= DATABASE =================
+
+const MONGO_URI = process.env.MONGO_URL;
+
 let db, collection;
 
 async function connectDb() {
-  const client = new MongoClient(MONGO_URI, { useUnifiedTopology: true });
-  await client.connect();
-  db = client.db("matrixdb");
-  collection = db.collection("matrix");
+  try {
+    const client = new MongoClient(MONGO_URI);
+    await client.connect();
+
+    db = client.db("matrixdb");
+    collection = db.collection("matrix");
+
+    console.log("✅ Connected to MongoDB Atlas");
+  } catch (error) {
+    console.error("❌ MongoDB Connection Failed:", error.message);
+    process.exit(1);
+  }
 }
+
+// ================= CSV EXPORT =================
 
 async function exportMongoToCsv() {
   try {
-    const bookings = await collection.find({}, { projection: { _id: 0 } }).toArray();
+    if (!collection) return;
+
+    const bookings = await collection
+      .find({}, { projection: { _id: 0 } })
+      .toArray();
+
     const filePath = path.join(__dirname, "bookings_data.csv");
 
     const header = [
@@ -50,6 +72,7 @@ async function exportMongoToCsv() {
     ];
 
     const lines = [header.join(",")];
+
     for (const b of bookings) {
       lines.push(
         [
@@ -64,15 +87,14 @@ async function exportMongoToCsv() {
     }
 
     await writeFile(filePath, lines.join("\n"), "utf8");
-    console.log("✅ CSV CREATED / UPDATED SUCCESSFULLY at", filePath);
-    return true;
+    console.log("✅ CSV UPDATED");
   } catch (e) {
-    console.error("❌ CSV ERROR:", e);
-    return false;
+    console.error("❌ CSV ERROR:", e.message);
   }
 }
 
-// constants
+// ================= CONSTANTS =================
+
 const TIME_SLOTS = [
   "10 - 11 AM",
   "11 - 12 PM",
@@ -88,7 +110,8 @@ const TIME_SLOTS = [
   "9 - 10 PM",
 ];
 
-// helpers
+// ================= AUTH =================
+
 function loginRequired(req, res, next) {
   if (!req.session.admin_logged_in) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -96,30 +119,34 @@ function loginRequired(req, res, next) {
   next();
 }
 
-// static/template routes
+const ADMIN_USERNAME = process.env.ADMIN_USER || "admin";
+const ADMIN_PASSWORD = process.env.ADMIN_PASS || "matrix2024";
+
+// ================= ROUTES =================
+
+// Serve HTML
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "template", "index.html"));
 });
+
 app.get("/booking", (req, res) => {
   res.sendFile(path.join(__dirname, "template", "index2.html"));
 });
+
 app.get("/admin", (req, res) => {
   res.sendFile(path.join(__dirname, "template", "admin.html"));
 });
 
-// admin login
-const ADMIN_USERNAME = "admin";
-const ADMIN_PASSWORD = "matrix2024";
+// ================= ADMIN LOGIN =================
 
 app.post("/admin-login", (req, res) => {
-  const data = Object.keys(req.body).length ? req.body : req.query;
-  if (
-    data.username === ADMIN_USERNAME &&
-    data.password === ADMIN_PASSWORD
-  ) {
+  const { username, password } = req.body;
+
+  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
     req.session.admin_logged_in = true;
     return res.json({ success: true });
   }
+
   res.status(401).json({ success: false });
 });
 
@@ -128,72 +155,97 @@ app.get("/admin-logout", (req, res) => {
   res.redirect("/");
 });
 
-// time slots
+// ================= BOOKING =================
+
 app.get("/time-slots", (req, res) => {
   res.json(TIME_SLOTS);
 });
 
 app.get("/booked-slots", async (req, res) => {
-  const { date, console: consoleName } = req.query;
-  const bookings = await collection
-    .find({ date, console: consoleName }, { projection: { _id: 0, time_slot: 1 } })
-    .toArray();
-  res.json(bookings.map((b) => b.time_slot));
+  try {
+    const { date, console: consoleName } = req.query;
+
+    const bookings = await collection
+      .find(
+        { date, console: consoleName },
+        { projection: { _id: 0, time_slot: 1 } }
+      )
+      .toArray();
+
+    res.json(bookings.map((b) => b.time_slot));
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
-// add booking
 app.post("/add-booking", async (req, res) => {
-  const data = Object.keys(req.body).length ? req.body : req.query;
-  const required = ["name", "contact", "players", "console", "date", "time_slot"];
-  if (required.some((field) => !data[field])) {
-    return res.status(400).json({ message: "Missing required fields" });
+  try {
+    const data = req.body;
+
+    const required = ["name", "contact", "players", "console", "date", "time_slot"];
+
+    if (required.some((field) => !data[field])) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const existing = await collection.findOne({
+      date: data.date,
+      time_slot: data.time_slot,
+      console: data.console,
+    });
+
+    if (existing) {
+      return res.status(409).json({ message: "Time slot already booked" });
+    }
+
+    const bookingData = {
+      name: data.name,
+      contact: data.contact,
+      players: parseInt(data.players, 10),
+      console: data.console,
+      date: data.date,
+      time_slot: data.time_slot,
+    };
+
+    await collection.insertOne(bookingData);
+    await exportMongoToCsv();
+
+    res.json({ message: "Booking successful" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
   }
-
-  const existing = await collection.findOne({
-    date: data.date,
-    time_slot: data.time_slot,
-    console: data.console,
-  });
-  if (existing) {
-    return res.status(409).json({ message: "Time slot already booked" });
-  }
-
-  const bookingData = {
-    name: data.name,
-    contact: data.contact,
-    players: parseInt(data.players, 10),
-    console: data.console,
-    date: data.date,
-    time_slot: data.time_slot,
-  };
-
-  await collection.insertOne(bookingData);
-  exportMongoToCsv();
-  res.json({ message: "Booking successful" });
 });
 
-// admin booking management
+// ================= ADMIN MANAGEMENT =================
+
 app.get("/admin/bookings", loginRequired, async (req, res) => {
-  const bookings = await collection.find({}, { projection: { _id: 0 } }).toArray();
+  const bookings = await collection
+    .find({}, { projection: { _id: 0 } })
+    .toArray();
+
   res.json(bookings);
 });
 
 app.delete("/admin/delete-booking", loginRequired, async (req, res) => {
   const data = req.body;
+
   const result = await collection.deleteOne({
     date: data.date,
     time_slot: data.time_slot,
     console: data.console,
   });
+
   if (result.deletedCount > 0) {
-    exportMongoToCsv();
+    await exportMongoToCsv();
     return res.json({ message: "Deleted successfully" });
   }
+
   res.status(404).json({ message: "Booking not found" });
 });
 
 app.put("/admin/update-booking", loginRequired, async (req, res) => {
   const data = req.body;
+
   const result = await collection.updateOne(
     {
       date: data.old_date,
@@ -213,31 +265,36 @@ app.put("/admin/update-booking", loginRequired, async (req, res) => {
   );
 
   if (result.modifiedCount > 0) {
-    exportMongoToCsv();
+    await exportMongoToCsv();
     return res.json({ message: "Updated successfully" });
   }
+
   res.status(404).json({ message: "Booking not found" });
 });
 
-// download csv
 app.get("/admin/export-to-csv", loginRequired, (req, res) => {
   const filePath = path.join(__dirname, "bookings_data.csv");
+
   if (!fs.existsSync(filePath)) {
     return res.status(404).json({ message: "CSV file not found" });
   }
+
   res.download(
     filePath,
     `matrix_bookings_${new Date().toISOString().replace(/[:.]/g, "_")}.csv`
   );
 });
 
-// start server
+// ================= START SERVER =================
+
 (async () => {
   await connectDb();
   await exportMongoToCsv();
+
   const port = process.env.PORT || 5000;
+
   app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
-    console.log(`⇨ open in browser: http://localhost:${port}/`);
+    console.log(`🚀 Server running on port ${port}`);
+    console.log(`🌍 Local link: http://localhost:${port}`);
   });
 })();
